@@ -1,0 +1,155 @@
+CREATE SEQUENCE CD_ID;
+CREATE TABLE IF NOT EXISTS CD (
+    CD_number INT DEFAULT NEXT VALUE FOR CD_ID,
+    Title VARCHAR(50) NOT NULL,
+    Producer VARCHAR(50) NOT NULL,
+    Years INT NOT NULL, 
+    Copies INT NOT NULL,
+    PRIMARY KEY (CD_number, Title)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Client (
+    Client_number INT PRIMARY KEY,
+    First_name VARCHAR(50) NOT NULL,
+    Last_name VARCHAR(50) NOT NULL,
+    Email VARCHAR(100),
+    Phone_number VARCHAR(20) NOT NULL
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Contains (
+    Playlist VARCHAR(50) NOT NULL,
+    Track_number INT NOT NULL,
+    CD_number INT NOT NULL,
+    PRIMARY KEY (Playlist, Track_number, CD_number)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS DJ (
+    ID INT PRIMARY KEY
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Employee (
+    ID INT PRIMARY KEY,
+    First_name VARCHAR(50) NOT NULL,
+    Last_name VARCHAR(50) NOT  NULL
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Events (
+    ID INT PRIMARY KEY,
+    Nom VARCHAR(50) NOT NULL,
+    Dates DATE NOT NULL,
+    Descriptions VARCHAR(500),
+    Client INT NOT NULL,
+    Manager INT NOT NULL,
+    Event_planner INT NOT NULL,
+    DJ INT NOT NULL,
+    Theme VARCHAR(50) NOT NULL,
+    Types VARCHAR(50) NOT NULL,
+    Locations VARCHAR(50) NOT NULL,
+    Rental_fee INT NOT NULL,
+    Playlist VARCHAR(50) NOT NULL
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Event_planner (
+    ID INT PRIMARY KEY
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Genre (
+    Nom VARCHAR(50) PRIMARY KEY
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Locations (
+    ID INT PRIMARY KEY,
+    Street VARCHAR(50) NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    Postal_code VARCHAR(50) NOT NULL,
+    Country VARCHAR(50) NOT NULL,
+    Comment VARCHAR(500)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Manager(
+    ID INT PRIMARY KEY
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Playlist (
+    Nom VARCHAR(50)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Song(
+    CD_number INT NOT NULL,
+    Track_number INT NOT NULL,
+    Title VARCHAR(50) NOT NULL,
+    Artiste VARCHAR(50) NOT NULL,
+    Duration INT NOT NULL,
+    Genre VARCHAR(50) NOT NULL,
+    PRIMARY KEY(CD_number, Track_number)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Specialization (
+    DJ INT NOT NULL,
+    Genre VARCHAR(50) NOT NULL,
+    PRIMARY KEY (DJ, Genre)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Specializes (
+    Subgenre VARCHAR(50) NOT NULL,
+    Genre VARCHAR(50) NOT NULL,
+    PRIMARY KEY (Subgenre, Genre)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Suitablefor (
+    Theme VARCHAR(50) NOT NULL,
+    Playlist VARCHAR(50) NOT NULL,
+    PRIMARY KEY(Theme, Playlist)
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Supervision (
+    Supervisor_ID INT NOT NULL,
+    Employee_ID INT PRIMARY KEY,
+)ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS Theme (
+    Nom VARCHAR(50) PRIMARY KEY
+)ENGINE = InnoDB;
+
+ALTER TABLE Contains
+    ADD FOREIGN KEY (CD_number) REFERENCES CD(CD_number),
+    ADD FOREIGN KEY (Playlist) REFERENCES Playlist(Nom),
+    ADD FOREIGN KEY (Track_number) REFERENCES Song(Track_number);
+
+ALTER TABLE DJ
+    ADD FOREIGN KEY (ID) REFERENCES Employee(ID);
+
+ALTER TABLE Events
+    ADD FOREIGN KEY (Client) REFERENCES Client(Client_number),
+    ADD FOREIGN KEY (Manager) REFERENCES Manager(ID),
+    ADD FOREIGN KEY (Event_planner) REFERENCES Event_planner(ID),
+    ADD FOREIGN KEY (DJ) REFERENCES DJ(ID),
+    ADD FOREIGN KEY (Theme) REFERENCES Theme(Nom),
+    ADD FOREIGN KEY (Locations) REFERENCES Locations(ID),
+    ADD FOREIGN KEY (Playlist) REFERENCES Playlist(Nom);
+
+ALTER TABLE Event_planner
+    ADD FOREIGN KEY (ID) REFERENCES Employee(ID);
+
+ALTER TABLE Manager
+    ADD FOREIGN KEY (ID) REFERENCES Employee(ID);
+
+ALTER TABLE Song
+    ADD FOREIGN KEY (CD_number) REFERENCES CD(CD_number),
+    ADD FOREIGN KEY (Genre) REFERENCES Genre(Nom);
+
+ALTER TABLE Specialization
+    ADD FOREIGN KEY (DJ) REFERENCES DJ(ID),
+    ADD FOREIGN KEY (Genre) REFERENCES Genre(Nom);
+
+ALTER TABLE Specializes
+    ADD FOREIGN KEY (Genre) REFERENCES Genre(Nom),
+    ADD FOREIGN KEY (Subgenre) REFERENCES Genre(Nom);
+
+ALTER TABLE Suitablefor
+    ADD FOREIGN KEY (Theme) REFERENCES Theme(Nom),
+    ADD FOREIGN KEY (Playlist) REFERENCES Playlist(Nom);
+
+ALTER TABLE Supervision
+    ADD FOREIGN KEY (Employee_ID) REFERENCES Employee(ID),
+    ADD FOREIGN KEY (Manager) REFERENCES Manager(ID);
